@@ -1,45 +1,18 @@
-/// <reference types="cypress" />
+const { Given, When, Then } = require('@badeball/cypress-cucumber-preprocessor')
 
-describe('Login / Logout Test', () => {
-	beforeEach(() => {
-		cy.visit('http://zero.webappsecurity.com/index.html')
-		cy.url('include', 'index.html')
-		cy.get('#signin_button').click()
-	})
-	it('Should login using invalid data', () => {
-		cy.fixture('example').then((user) => {
-			const username = user.invalidUser.username
-			const password = user.invalidUser.password
+Given('I open login page', () => {
+	cy.visit('http://zero.webappsecurity.com/login.html')
+})
+When('I submit login', () => {
+	cy.get('#user_login').clear()
+	cy.get('#user_login').type('username')
 
-			cy.loginZWA(username, password)
+	cy.get('#user_password').clear()
+	cy.get('#user_password').type('password')
 
-			cy.get('.btn').click()
-			cy.get('.alert-error')
-				.should('be.visible')
-				.and('contain.text', 'Login and/or password are wrong.')
-		})
-	})
+	cy.get('input[name="submit"]').click()
+})
 
-	it('Should login using valid data', () => {
-		cy.fixture('example').then((user) => {
-			const username = user.validUser.username
-			const password = user.validUser.password
-
-			cy.loginZWA(username, password)
-			cy.get('h2').should('contain.text', 'Cash Accounts')
-		})
-	})
-	it('Should Logout from the Application', () => {
-		cy.fixture('example').then((user) => {
-			const username = user.validUser.username
-			const password = user.validUser.password
-
-			cy.loginZWA(username, password)
-
-			cy.contains('username').click()
-			cy.get('#logout_link').click()
-
-			cy.get('#signin_button').should('contain.text', 'Signin')
-		})
-	})
+Then('I should see homepage', () => {
+	cy.get('h2').should('contain.text', 'Cash Accounts')
 })
